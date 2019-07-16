@@ -742,6 +742,33 @@ services:
       networks:
         - backend
 
+### Capi Indexation Node Server (NodeJs) #######################################
+
+    capi:
+      build:
+        context: ./capi_indexation_node
+      volumes:
+        - ${CAPI_SRC_PATH}:/app
+        - /usr/app/node_modules
+        - ./capi_indexation_node/conf/config-local.js:/app/conf/config-local.js
+      expose:
+        - '${CAPI_SERVER_PORT}'
+      ports:
+        - "${CAPI_SERVER_PORT}:9042"
+      depends_on:
+        - redis
+        - mysql
+        - rabbitmq
+        - elasticsearch
+#        - project_ingestion
+      links:
+        - redis
+        - mysql
+        - rabbitmq
+        - elasticsearch
+      networks:
+        - backend
+
 ### God_mode Server (NodeJs) #######################################
 
     god_mode:
@@ -762,82 +789,6 @@ services:
       links:
         - redis
       networks:
-        - backend
-
-### Playster_interface Server (NodeJs) #######################################
-
-    playster_interface:
-      build:
-        context: ./playster_interface
-        args:
-          - COMPOSER_GLOBAL_INSTALL=true
-      volumes:
-#        - ${PLAYSTER_INTERFACE_SRC_PATH}:/app/playster_interface
-        - ${PLAYSTER_INTERFACE_SRC_PATH}:/app
-      expose:
-        - "${PLAYSTER_INTERFACE_FPM_SERVER_PORT}"
-        - "${PLAYSTER_INTERFACE_HTTP_SERVER_PORT}"
-        - "${PLAYSTER_INTERFACE_HTTPS_SERVER_PORT}"
-      depends_on:
-        - workspace
-        - mysql
-        - redis
-        - rabbitmq
-        - php-fpm
-        - god_mode
-        - phpmyadmin
-      extra_hosts:
-        - "dockerhost:${DOCKER_HOST_IP}"
-      ports:
-        - "${PLAYSTER_INTERFACE_FPM_SERVER_PORT}:9003"
-        - "${PLAYSTER_INTERFACE_HTTP_SERVER_PORT}:80"
-        - "${PLAYSTER_INTERFACE_HTTPS_SERVER_PORT}:443"
-      links:
-        - redis
-        - mysql
-        - rabbitmq
-      environment:
-        - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
-      networks:
-        - frontend
-        - backend
-
-### capi-slots-microservice Server (NodeJs) #######################################
-    capi-slots-microservice:
-      build:
-        context: ./capi-slots-microservice
-        args:
-          - COMPOSER_GLOBAL_INSTALL=true
-      volumes:
-#        - ${PLAYSTER_INTERFACE_SRC_PATH}:/app/capi-slots-microservice
-        - ${CAPI_SLOTS_MICROSERVICE_SRC_PATH}:/app
-      expose:
-        - '${CAPI_SLOTS_MICROSERVICE_FPM_SERVER_PORT}'
-        - '${CAPI_SLOTS_MICROSERVICE_HTTP_SERVER_PORT}'
-        - '${CAPI_SLOTS_MICROSERVICE_HTTPS_SERVER_PORT}'
-      depends_on:
-        - workspace
-        - mysql
-        - redis
-        - rabbitmq
-        - php-fpm
-        - god_mode
-        - phpmyadmin
-        - playster_interface
-      extra_hosts:
-        - "dockerhost:${DOCKER_HOST_IP}"
-      ports:
-        - "${CAPI_SLOTS_MICROSERVICE_FPM_SERVER_PORT}:9004"
-        - "${CAPI_SLOTS_MICROSERVICE_HTTP_SERVER_PORT}:80"
-        - "${CAPI_SLOTS_MICROSERVICE_HTTPS_SERVER_PORT}:443"
-      links:
-        - redis
-        - mysql
-        - rabbitmq
-      environment:
-        - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
-      networks:
-        - frontend
         - backend
 
 ### Laravel Echo Server #######################################
@@ -897,6 +848,8 @@ volumes:
   aerospike:
     driver: "local"
   caddy:
+    driver: "local"
+  elasticsearch:
     driver: "local"
   elasticsearch-data:
     driver: "local"

@@ -30,6 +30,7 @@ RUN apt-get install -qq -y software-properties-common apt-utils iputils-ping
 RUN apt-get install -qq -y \
     vim \
     htop \
+    zip \
     bzip2 \
     autoconf \
     automake \

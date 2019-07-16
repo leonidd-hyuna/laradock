@@ -1,0 +1,28 @@
+version: '3'
+services:
+  capi:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+#     - "8181:9001"
+#     - "9229:9229"
+#     - "9200:9200"
+     - "9042:9042"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/public/vendor
+    networks:
+      - webnet
+  redis:
+    image: "redis:alpine"
+    networks:
+      - webnet
+networks:
+    webnet:
+      external:
+        name: webnet
+    backend:
+      external:
+        name: backend
