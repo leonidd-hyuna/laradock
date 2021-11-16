@@ -16,7 +16,7 @@
   "dependencies": {
     "amqplib": "^0.4.2",
     "async": "^2.0.1",
-    "aws-sdk": "^2.94.0",
+    "aws-sdk": "^2.814.0",
     "bluebird": "^3.4.5",
     "bull": "^3.0.0-rc.4",
     "bunyan": "^1.8.1",
